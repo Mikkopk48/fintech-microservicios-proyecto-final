@@ -16,6 +16,8 @@ El sistema tiene cuatro aplicaciones independientes y un repositorio de configur
 
 Repositorio de configuración: https://github.com/Mikkopk48/fintech-config-diplo
 
+![Arquitectura](arquitectura_microservicios_diplomatura.png)
+
 Flujo principal:
 
 1. Al arrancar, cada servicio pide su configuración al Config Server, que la lee desde GitHub.
