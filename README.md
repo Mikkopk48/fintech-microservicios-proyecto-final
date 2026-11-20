@@ -206,3 +206,6 @@ Detectadas en la revisión de código con IA (CodeRabbit) y no implementadas por
 - En Windows, clonar el proyecto en una ruta sin apóstrofos.
 
 
+Link repositorio de notas a mano: https://github.com/Mikkopk48/notas-actividad-cierre-diplo-fintech
+
+![Notas](notas-proyecto.png)
