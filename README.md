@@ -99,6 +99,34 @@ En Windows se usa `mvnw.cmd` en lugar de `./mvnw`. Cada comando va en una termin
 
 Tipos de producto válidos: `CUENTA`, `TARJETA`, `PRESTAMO`, `INVERSION`.
 
+## Pruebas rápidas con curl
+
+Con los cuatro servicios levantados:
+
+```bash
+# Crear un cliente (201)
+curl -i -X POST localhost:8081/customers -H "Content-Type: application/json" \
+  -d '{"name":"Ana López","document":"40123456","email":"ana@mail.com","balance":150000.00}'
+
+# Crear un producto para ese cliente (201)
+curl -i -X POST localhost:8082/products -H "Content-Type: application/json" \
+  -d '{"customerId":1,"type":"CUENTA","productNumber":"0001-123","amount":150000.00}'
+
+# Consultar el cliente con sus productos vía Feign (200)
+curl -i localhost:8081/customers/1
+
+# Saldo con más de 2 decimales (400)
+curl -i -X POST localhost:8081/customers -H "Content-Type: application/json" \
+  -d '{"name":"Juan","document":"30111222","email":"juan@mail.com","balance":1.005}'
+
+# Documento repetido (409)
+curl -i -X POST localhost:8081/customers -H "Content-Type: application/json" \
+  -d '{"name":"Otro","document":"40123456","email":"otro@mail.com","balance":1000.00}'
+
+# Cliente inexistente (404)
+curl -i localhost:8081/customers/999
+```
+
 ## Prueba de integración
 
 1. Crear un cliente con `POST http://localhost:8081/customers`:
@@ -151,12 +179,28 @@ Todos los errores se devuelven con el mismo formato:
 - Las bases H2 son en memoria: los datos se pierden al reiniciar cada servicio.
 - La consola de H2 está habilitada en `/h2-console` de cada servicio.
 - No se implementaron borrados: en sistemas financieros se prefiere el borrado lógico, que queda como mejora futura.
-- Toda la configuración (puertos, URLs, base de datos) vive en el repositorio fintech-config-diplo. Cada servicio solo conserva localmente su nombre y la dirección del Config Server, porque los necesita para pedir su configuración al arrancar. El Config Server guarda su propia configuración localmente, ya que es la fuente de configuración.
+- Toda la configuración (puertos, URLs, base de datos) vive en el repositorio fintech-config-diplo. Cada servicio solo
+  conserva localmente su nombre y la dirección del Config Server, porque los necesita para pedir su configuración al
+  arrancar. El Config Server guarda su propia configuración localmente, ya que es la fuente de configuración.
 - Después de levantar los cuatro servicios, esperar unos 30 segundos antes de probar
-
 
 ### Para liberar todos los puretos de forma rápida
 
 ```
 fuser -k 8888/tcp 8761/tcp 8081/tcp 8082/tcp
 ```
+
+## Limitaciones conocidas
+
+Detectadas en la revisión de código con IA (CodeRabbit) y no implementadas porque la consigna las marca como opcionales:
+
+- La API no tiene autenticación ni roles: cualquiera puede crear o actualizar clientes.
+- Eureka y el Config Server no piden credenciales.
+- Al crear un producto no se verifica que el cliente exista en customer-service.
+- Las bases H2 son en memoria: al reiniciar, los ids se reutilizan y un cliente nuevo podría quedar asociado a productos
+  de uno anterior.
+- Después de levantar los servicios, conviene esperar unos 30 segundos antes de probar `GET /customers/{id}`, porque
+  customer-service actualiza su lista de Eureka cada 30 segundos.
+- En Windows, clonar el proyecto en una ruta sin apóstrofos.
+
+
