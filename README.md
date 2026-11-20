@@ -152,6 +152,8 @@ Todos los errores se devuelven con el mismo formato:
 - La consola de H2 está habilitada en `/h2-console` de cada servicio.
 - No se implementaron borrados: en sistemas financieros se prefiere el borrado lógico, que queda como mejora futura.
 - Toda la configuración (puertos, URLs, base de datos) vive en el repositorio fintech-config-diplo. Cada servicio solo conserva localmente su nombre y la dirección del Config Server, porque los necesita para pedir su configuración al arrancar. El Config Server guarda su propia configuración localmente, ya que es la fuente de configuración.
+- Después de levantar los cuatro servicios, esperar unos 30 segundos antes de probar
+
 
 ### Para liberar todos los puretos de forma rápida
 

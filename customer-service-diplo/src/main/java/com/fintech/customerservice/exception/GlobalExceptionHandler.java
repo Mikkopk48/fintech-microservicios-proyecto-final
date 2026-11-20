@@ -1,6 +1,7 @@
 package com.fintech.customerservice.exception;
 
 import feign.FeignException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -45,5 +46,10 @@ public class GlobalExceptionHandler {
                 message
         );
         return ResponseEntity.status(status).body(body);
+    }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex) {
+        return build(HttpStatus.CONFLICT,
+                "El documento o el correo ya están registrados");
     }
 }
